@@ -19,7 +19,6 @@ async function readLocalInvoices() {
 }
 
 async function getInvoices() {
-  // If user explicitly wants local mock, skip external call
   if (USE_LOCAL || !INVOICE_API_URL) {
     return await readLocalInvoices();
   }
@@ -34,7 +33,6 @@ async function getInvoices() {
     if (data && Array.isArray(data.invoices)) return data.invoices;
     return data;
   } catch (err) {
-    // External API failed — log and fallback to local mock
     console.warn(`External invoices API failed (${INVOICE_API_URL}):`, err.message);
     return await readLocalInvoices();
   }

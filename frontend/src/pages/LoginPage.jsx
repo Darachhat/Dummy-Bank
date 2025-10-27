@@ -1,12 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-export default function LoginPage({ onLogin }) {
+export default function LoginPage() {
   const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const from = location.state?.from?.pathname || '/';
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -14,7 +19,7 @@ export default function LoginPage({ onLogin }) {
     setLoading(true);
     try {
       await login(phone, password);
-      onLogin && onLogin();
+      navigate(from, { replace: true });
     } catch (e) {
       setErr(e.message || 'Login failed');
     } finally {
@@ -23,21 +28,21 @@ export default function LoginPage({ onLogin }) {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Sign in</h2>
+    <div className="max-w-md mx-auto">
+      <h2 className="text-xl font-semibold mb-4">Sign in</h2>
       {err && <div className="text-red-600 mb-2">{err}</div>}
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label className="block text-sm">Phone</label>
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full border px-3 py-2 rounded" />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full border p-2 rounded" />
         </div>
         <div>
           <label className="block text-sm">Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border px-3 py-2 rounded" />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border p-2 rounded" />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white px-3 py-2 rounded">
-          {loading ? 'Signing in...' : 'Sign in'}
-        </button>
+        <div className="flex gap-2">
+          <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded">{loading ? 'Signing...' : 'Sign in'}</button>
+        </div>
       </form>
     </div>
   );

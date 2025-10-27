@@ -1,12 +1,5 @@
-// backend/src/controllers/transactionsController.js
 const transactionsService = require('../services/transactionsService');
 
-/**
- * GET /api/transactions
- * Optional query params:
- *  - limit (number)
- * Returns list of transactions (most recent first).
- */
 exports.listTransactions = async (req, res) => {
   try {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 100;

@@ -18,7 +18,6 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 
-// invoice and transactions routers both attached under /api
 app.use('/api', invoicesRouter);
 app.use('/api', transactionsRouter);
 app.use('/api', accountsRouter);

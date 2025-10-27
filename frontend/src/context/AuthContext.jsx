@@ -1,41 +1,57 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { apiFetch } from '../api/client';
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({
+  token: null,
+  user: null,
+  login: async () => {},
+  logout: () => {}
+});
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
+  const [token, setToken] = useState(() => {
+    try { return localStorage.getItem('authToken'); } catch (e) { return null; }
+  });
+  const [user, setUser] = useState(() => {
+    try {
+      const raw = localStorage.getItem('authUser');
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  });
 
   useEffect(() => {
-    if (token) localStorage.setItem('token', token);
-    else localStorage.removeItem('token');
+    try {
+      if (token) localStorage.setItem('authToken', token);
+      else localStorage.removeItem('authToken');
+    } catch (e) {}
   }, [token]);
 
   useEffect(() => {
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
+    try {
+      if (user) localStorage.setItem('authUser', JSON.stringify(user));
+      else localStorage.removeItem('authUser');
+    } catch (e) {}
   }, [user]);
 
   async function login(phone, password) {
-    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, password })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Login failed');
-    setToken(data.token);
-    setUser(data.user);
-    return data.user;
+    const res = await apiFetch('/auth/login', { method: 'POST', body: { phone, password } });
+    if (res && res.token) {
+      setToken(res.token);
+      setUser(res.user || null);
+      return res;
+    }
+    throw new Error('Login failed');
   }
 
   function logout() {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    try { localStorage.removeItem('paymentDraft'); } catch (e) {}
   }
 
-  return <AuthContext.Provider value={{ token, user, login, logout, setUser }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ token, user, login, logout, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
