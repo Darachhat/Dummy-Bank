@@ -1,0 +1,24 @@
+[
+  {
+    "invoiceNo": "INV-2025-001",
+    "amount": 150.00,
+    "dueDate": "2025-11-05",
+    "description": "Web hosting",
+    "status": "UNPAID"
+  },
+  {
+    "invoiceNo": "INV-2025-002",
+    "amount": 249.99,
+    "dueDate": "2025-11-12",
+    "description": "Monthly subscription",
+    "status": "UNPAID"
+  },
+  {
+    "invoiceNo": "INV-2025-003",
+    "amount": 75.50,
+    "dueDate": "2025-10-30",
+    "description": "Support hours",
+    "status": "PAID",
+    "paidAt": "2025-10-01T12:00:00Z"
+  }
+]
